@@ -1,0 +1,5 @@
+{
+  "load_extensions": {
+    "jupyterteam_widget/extension": true
+  }
+}
