@@ -21,12 +21,12 @@ var _ = require('lodash');
 // differ from the defaults will be specified.
 var HermiteWidgetModel = widgets.DOMWidgetModel.extend({
     defaults: _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
-        _model_name : HermiteWidgetModel.model_name,
-        _model_module : HermiteWidgetModel.model_module,
-        _model_module_version : HermiteWidgetModel.model_module_version,
-        _view_name : HermiteWidgetModel.view_name,
-        _view_module : HermiteWidgetModel.view_module,
-        _view_module_version : HermiteWidgetModel.view_module,
+        _model_name : 'HermiteWidgetModel',
+        _model_module : 'jupyterteam_widget',
+        _model_module_version : '0.1.0',
+        _view_name : 'HermiteWidgetView',
+        _view_module : 'jupyterteam_widget',
+        _view_module_version : '0.1.0',
         value : 'Hello World!'
     })
 });
