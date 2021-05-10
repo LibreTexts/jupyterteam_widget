@@ -3,8 +3,32 @@ jupyterteam_widget
 
 Widget for learning about Comm behavior
 
-Installation
+Development
 ------------
+
+Run the following to locally install the widget;
+
+    $ git clone https://github.com/LibreTexts/jupyterteam_widget.git
+    $ cd jupyterteam_widget
+    $ pip install -e .
+
+To enable development mode, run;
+
+    $ jupyter labextension develop --overwrite jupyterteam_widget
+
+To build the Javascript, run;
+
+    $ cd js
+    $ yarn run build
+
+You may also use `yarn run watch` to continuously rebuild the widget as you change the Javascript.
+
+The widget may be viewed by importing with `import jupyterteam_widget`. See the `example-notebook.ipynb` for an example.
+
+Default CookieCutter Installation
+------------
+
+This section was written by default upon creation of the repository by the cookiecutter template. Here for reference, but use the information above to install for development.
 
 To install use pip:
 
