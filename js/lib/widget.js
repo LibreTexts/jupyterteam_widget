@@ -52,12 +52,12 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
     },
 
     value_changed: function() {
-        this.el.textContent = this.model.get('value');
+        this.el.textContent = this.model.get('value') + 10;
     },
 
 
     onInputChanged: function() {
-        this.model.set('value', this.HermiteWidgetModel.value);
+        this.model.set('value', this.HermiteWidgetModel.value + 10);
         this.model.save_changes();
     }
 });
