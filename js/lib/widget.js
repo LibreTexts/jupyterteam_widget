@@ -38,15 +38,27 @@ var HermiteWidgetModel = widgets.DOMWidgetModel.extend({
 var HermiteWidgetView = widgets.DOMWidgetView.extend({
     // Defines how the widget gets rendered into the DOM
     render: function() {
+        this.HermiteWidgetModel = document.createElement('input');
+        this.HermiteWidgetModel.value = this.model.get('value');
+        this.el.appendChild(this.HermiteWidgetModel);
+
         this.value_changed();
 
         // Observe changes in the value traitlet in Python, and define
         // a custom callback.
         this.model.on('change:value', this.value_changed, this);
+
+        this.HermiteWidgetModel.onchange = this.onInputChanged.bind(this);
     },
 
     value_changed: function() {
         this.el.textContent = this.model.get('value');
+    },
+
+
+    onInputChanged: function() {
+        this.model.set('value', this.HermiteWidgetModel.value);
+        this.model.save_changes();
     }
 });
 
