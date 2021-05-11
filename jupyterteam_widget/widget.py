@@ -26,3 +26,11 @@ class HermiteWidget(DOMWidget, ValueWidget):
     # is automatically synced to the frontend *any* time it changes in Python.
     # It is synced back to Python from the frontend *any* time the model is touched.
     value = Int(1).tag(sync=True)
+
+    # validator for input value
+    @validate('value')
+    def _valid_value(self, proposal):
+        proposal_value = proposal['value']
+        if proposal_value < 0 or proposal_value > 10:
+            raise TraitError('Invalid integer: accepted values are 0 <= value <= 10')
+        return proposal_value
