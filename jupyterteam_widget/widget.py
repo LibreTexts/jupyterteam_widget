@@ -1,5 +1,5 @@
 from ipywidgets import DOMWidget, ValueWidget, register
-from traitlets import Unicode, Bool, validate, TraitError
+from traitlets import Unicode, Int, validate, TraitError
 
 from ._frontend import module_name, module_version
 
@@ -25,4 +25,4 @@ class HermiteWidget(DOMWidget, ValueWidget):
     # Widget properties are defined as traitlets. Any property tagged with `sync=True`
     # is automatically synced to the frontend *any* time it changes in Python.
     # It is synced back to Python from the frontend *any* time the model is touched.
-    value = Unicode('Hello World!').tag(sync=True)
+    value = Int(1).tag(sync=True)

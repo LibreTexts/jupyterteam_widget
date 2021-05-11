@@ -1,6 +1,8 @@
 var widgets = require('@jupyter-widgets/base');
 var _ = require('lodash');
 
+var version = '0.1.0';
+
 // See jupyterteam_widget/widget.py for the kernel counterpart to this file.
 
 
@@ -23,11 +25,11 @@ var HermiteWidgetModel = widgets.DOMWidgetModel.extend({
     defaults: _.extend(widgets.DOMWidgetModel.prototype.defaults(), {
         _model_name : 'HermiteWidgetModel',
         _model_module : 'jupyterteam_widget',
-        _model_module_version : '0.1.0',
+        _model_module_version : version,
         _view_name : 'HermiteWidgetView',
         _view_module : 'jupyterteam_widget',
-        _view_module_version : '0.1.0',
-        value : 'Hello World!'
+        _view_module_version : version,
+        value : 1
     })
 });
 
