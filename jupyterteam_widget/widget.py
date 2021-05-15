@@ -67,13 +67,23 @@ def compute_matrix(self):
                 NARY[n+1,k] = 2*NARY[n,k-1] - 2*n*NARY[n-1,k]
 
     print(NARY)
+    hermite(NARY)
 
-# for a given rho, find the hermite polynomial of order n
-# def hermite(n,rho, NARY):
-#     coefficients = {}
-#     Hn = 0
-#     for k in range(n+1):
-#         coefficients[k] = NARY[n,k]
-#     for k in coefficients:
-#         Hn += coefficients[k]*rho**k
-#     return Hn
+
+# make the polynomial from the matrix
+def hermite(NARY):
+    rows = len(NARY[0])
+    cols = rows
+    
+    for i in range(rows):
+        temp = "H" + str(i) + " (x) = "
+        for j in range(cols - 1, -1, -1):
+            if(NARY[i][j]):     # value in the matrix not 0
+                if(j == 0):     # 1st column (when x^0)
+                    temp += str(NARY[i][j])
+                elif(j == 1):   # 2nd column (when x^1)
+                    temp += str(NARY[i][j]) + "x"
+                else:
+                    temp += str(NARY[i][j]) + "x^" + str(j) + " + "
+
+        print(temp)
