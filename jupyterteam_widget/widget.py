@@ -1,5 +1,8 @@
 from ipywidgets import DOMWidget, ValueWidget, register
-from traitlets import Unicode, Int, validate, TraitError
+from traitlets import Unicode, Int, validate, TraitError, List, observe
+
+import numpy as np
+import math
 
 from ._frontend import module_name, module_version
 
@@ -27,6 +30,10 @@ class HermiteWidget(DOMWidget, ValueWidget):
     # It is synced back to Python from the frontend *any* time the model is touched.
     value = Int(1).tag(sync=True)
 
+    coefficents = List([68]).tag(sync=True)
+
+    polystring = Unicode('this is the string').tag(sync=True)
+
     # validator for input value
     @validate('value')
     def _valid_value(self, proposal):
@@ -34,3 +41,48 @@ class HermiteWidget(DOMWidget, ValueWidget):
         if proposal_value < 0 or proposal_value > 10:
             raise TraitError('Invalid integer: accepted values are 0 <= value <= 10')
         return proposal_value
+
+    @observe('value')
+    def _value_changed(self, change):
+        self.polystring = testHermite(self.value)
+        # print(self.polystring)
+
+def testFunc(input):
+    return int((input * 10 + 20)/5)
+
+def testHermite(input): 
+    ORDER = int(input)
+
+    NARY = np.zeros((ORDER+1,ORDER+1))
+    NARY[0,0] = 1
+
+    if ORDER > 0:
+        NARY[1,1] = 2
+
+        # fill out the coefficient matrix using equation 4-16
+        # fails if n < 1
+        for k in range(ORDER+1):
+            for n in range(ORDER):
+                NARY[n+1,k] = 2*NARY[n,k-1] - 2*n*NARY[n-1,k]
+
+    return hermite_string(NARY)
+
+def hermite_string(NARY):
+    rows = len(NARY[0])
+    cols = rows
+
+    temp = ''
+
+    for i in range(rows):
+        temp += "H" + str(i) + " (x) = "
+        for j in range(cols - 1, -1, -1):
+            if(NARY[i][j]):     # value in the matrix not 0
+                if(j == 0):     # 1st column (when x^0)
+                    temp += str(NARY[i][j])
+                elif(j == 1):   # 2nd column (when x^1)
+                    temp += str(NARY[i][j]) + "x"
+                else:
+                    temp += str(NARY[i][j]) + "x^" + str(j) + " + "
+
+        temp+= "\n"
+    return temp 
