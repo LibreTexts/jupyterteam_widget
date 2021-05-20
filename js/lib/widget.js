@@ -29,7 +29,6 @@ var HermiteWidgetModel = widgets.DOMWidgetModel.extend({
         _view_name : 'HermiteWidgetView',
         _view_module : 'jupyterteam_widget',
         _view_module_version : version,
-        value : 1
     })
 });
 
@@ -46,7 +45,7 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
     },
 
     value_changed: function() {
-        this.el.textContent = this.model.get('value');
+        this.el.textContent = this.model.get('polystring');
     }
 });
 

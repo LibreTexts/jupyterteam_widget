@@ -1,5 +1,5 @@
 from ipywidgets import DOMWidget, ValueWidget, register
-from traitlets import Unicode, Int, validate, TraitError
+from traitlets import Unicode, Int, validate, TraitError, observe
 
 from ._frontend import module_name, module_version
 
@@ -37,8 +37,7 @@ class HermiteWidget(DOMWidget, ValueWidget):
         if proposal_value < 0 or proposal_value > 10:
             raise TraitError('Invalid integer: accepted values are 0 <= value <= 10')
 
-        # compute the matrix if the value entered is valid
-        compute_matrix(proposal_value)
+        return proposal_value
 
 
 
@@ -51,8 +50,15 @@ class HermiteWidget(DOMWidget, ValueWidget):
 #
 # we use the physicists polynomials from here https://en.wikipedia.org/wiki/Hermite_polynomials#Definition
 
-def compute_matrix(self):
-    ORDER = int(self)
+    polystring = Unicode('this is the string').tag(sync=True)
+
+    @observe('value')
+    def _value_changed(self, change):
+        self.polystring = compute_matrix(self.value)
+
+
+def compute_matrix(input):
+    ORDER = int(input)
 
     NARY = np.zeros((ORDER+1,ORDER+1))
     NARY[0,0] = 1
@@ -66,17 +72,18 @@ def compute_matrix(self):
             for n in range(ORDER):
                 NARY[n+1,k] = 2*NARY[n,k-1] - 2*n*NARY[n-1,k]
 
-    print(NARY)
-    hermite(NARY)
+    # print(NARY)
+    return hermite(NARY)
 
 
 # make the polynomial from the matrix
 def hermite(NARY):
     rows = len(NARY[0])
     cols = rows
+    temp = ""
     
     for i in range(rows):
-        temp = "H" + str(i) + " (x) = "
+        temp += "H" + str(i) + " (x) = "
         for j in range(cols - 1, -1, -1):
             if(NARY[i][j]):     # value in the matrix not 0
                 if(j == 0):     # 1st column (when x^0)
@@ -85,5 +92,6 @@ def hermite(NARY):
                     temp += str(NARY[i][j]) + "x"
                 else:
                     temp += str(NARY[i][j]) + "x^" + str(j) + " + "
+        temp += "\n"
 
-        print(temp)
+    return temp
