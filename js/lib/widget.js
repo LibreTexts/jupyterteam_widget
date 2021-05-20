@@ -35,30 +35,37 @@ var HermiteWidgetModel = widgets.DOMWidgetModel.extend({
 
 // Custom View. Renders the widget model.
 var HermiteWidgetView = widgets.DOMWidgetView.extend({
+    getString: function() {
+        let tempval = this._valueInput.value;
+        console.log(tempval);
+        this.model.set('value', tempval);
+        this.model.save_changes();
+        return this.model.get('polystring');
+    },
     // Defines how the widget gets rendered into the DOM
     render: function() {
-        // this._valueSubmit = document.createElement('input');
-        // this._valueSubmit.type = "button"
+        this._valueSubmit = document.createElement('input');
+        this._valueSubmit.type = "button"
 
-        // this.el.appendChild(this._valueSubmit);
+        this.el.appendChild(this._valueSubmit);
 
-        // this._valueSubmit.onclick = () => {
-        //     this.el.textContent += "dfsjklfd";
-        // };
+        this._valueSubmit.onclick = () => {
+            this.el.textContent += this.getString();
+        };
 
-        // this._valueInput = document.createElement('input');
-        // this._valueInput.type = "number"
+        this._valueInput = document.createElement('input');
+        this._valueInput.type = "number"
 
-        // this.el.appendChild(this._valueInput);
+        this.el.appendChild(this._valueInput);
 
-        // this._valueInput.onchange = this._onInputChanged.bind(this);
+        this._valueInput.onchange = this._onInputChanged.bind(this);
 
 
-        this.value_changed();
+        // this.value_changed();
 
-        // Observe changes in the value traitlet in Python, and define
-        // a custom callback.
-        this.model.on('change:value', this.value_changed, this);
+        // // Observe changes in the value traitlet in Python, and define
+        // // a custom callback.
+        // this.model.on('change:value', this.value_changed, this);
     },
 
     value_changed: function() {
@@ -70,7 +77,7 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
         console.log(tempval);
         this.model.set('value', tempval);
         this.model.save_changes();
-    }
+    },
 });
 
 
