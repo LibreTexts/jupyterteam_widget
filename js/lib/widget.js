@@ -1,10 +1,8 @@
 var widgets = require('@jupyter-widgets/base');
 var _ = require('lodash');
-
 var version = '0.1.0';
 
 // See jupyterteam_widget/widget.py for the kernel counterpart to this file.
-
 
 // Custom Model. Custom widgets models must at least provide default values
 // for model attributes, including
@@ -32,23 +30,37 @@ var HermiteWidgetModel = widgets.DOMWidgetModel.extend({
     })
 });
 
-
 // Custom View. Renders the widget model.
 var HermiteWidgetView = widgets.DOMWidgetView.extend({
-    // Defines how the widget gets rendered into the DOM
-    render: function() {
-        this.value_changed();
-
-        // Observe changes in the value traitlet in Python, and define
-        // a custom callback.
-        this.model.on('change:value', this.value_changed, this);
+    _onInputChanged: function() {
+        console.log("initial backend value = ", this.model.get('value'));
+        let tempval = this._valueInput.value;
+        console.log("value from input box = ", tempval);
+        this.model.set('value', tempval);
+        console.log("value from backend = ", this.model.get('value'));
+        this.model.save_changes();
+        this.el.textContent = this.model.get('polystring');
     },
 
-    value_changed: function() {
-        this.el.textContent = this.model.get('polystring');
+    // Defines how the widget gets rendered into the DOM
+    render: function() {
+        // input box
+        this._valueInput = document.createElement('input');
+        this._valueInput.type = "number";
+        this.el.appendChild(this._valueInput);
+
+        // Get Polynomial button
+        this._valueSubmit = document.createElement('input');
+        this._valueSubmit.type = "button";
+        this._valueSubmit.value = "Get polynomial";
+        this.el.appendChild(this._valueSubmit);
+
+        // display the polynomial when button clicked
+        this._valueSubmit.onclick = () => {
+            this._onInputChanged();
+        };
     }
 });
-
 
 module.exports = {
     HermiteWidgetModel: HermiteWidgetModel,

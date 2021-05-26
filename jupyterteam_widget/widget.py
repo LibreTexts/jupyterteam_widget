@@ -1,12 +1,49 @@
 from ipywidgets import DOMWidget, ValueWidget, register
 from traitlets import Unicode, Int, validate, TraitError, observe
-
 from ._frontend import module_name, module_version
-
 import sys
 import numpy as np
 
 # See js/lib/widget.js for the frontend counterpart to this file.
+
+# make the polynomial from the matrix
+def hermite(NARY):
+    rows = len(NARY[0])
+    cols = rows
+    temp = ""
+
+    for i in range(rows):
+        temp += "H" + str(i) + " (x) = "
+        for j in range(cols - 1, -1, -1):
+            if(NARY[i][j]):     # value in the matrix not 0
+                if(j == 0):     # 1st column (when x^0)
+                    temp += str(NARY[i][j])
+                elif(j == 1):   # 2nd column (when x^1)
+                    temp += str(NARY[i][j]) + "x"
+                else:
+                    temp += str(NARY[i][j]) + "x^" + str(j) + " + "
+        temp += "\n"
+
+    return temp
+
+# compute matrix from the dimension given
+def compute_matrix(input):
+    ORDER = int(input)
+
+    NARY = np.zeros((ORDER+1,ORDER+1))
+    NARY[0,0] = 1
+
+    if ORDER > 0:
+        NARY[1,1] = 2
+
+        # fill out the coefficient matrix using equation 4-16
+        # fails if n < 1
+        for k in range(ORDER+1):
+            for n in range(ORDER):
+                NARY[n+1,k] = 2*NARY[n,k-1] - 2*n*NARY[n-1,k]
+
+    return hermite(NARY)
+
 
 @register
 class HermiteWidget(DOMWidget, ValueWidget):
@@ -28,7 +65,8 @@ class HermiteWidget(DOMWidget, ValueWidget):
     # Widget properties are defined as traitlets. Any property tagged with `sync=True`
     # is automatically synced to the frontend *any* time it changes in Python.
     # It is synced back to Python from the frontend *any* time the model is touched.
-    value = Int(1).tag(sync=True)
+    value = Int(4).tag(sync=True)
+    polystring = Unicode(compute_matrix(value.default())).tag(sync=True)
 
     # validator for input value
     @validate('value')
@@ -40,7 +78,6 @@ class HermiteWidget(DOMWidget, ValueWidget):
         return proposal_value
 
 
-
 # we need to adapt this into the backend of the widget at jupyterteam_widget/widget.py
 # the idea is basically to replace sys.argv with the value of the widget
 #
@@ -50,48 +87,6 @@ class HermiteWidget(DOMWidget, ValueWidget):
 #
 # we use the physicists polynomials from here https://en.wikipedia.org/wiki/Hermite_polynomials#Definition
 
-    polystring = Unicode('this is the string').tag(sync=True)
-
     @observe('value')
     def _value_changed(self, change):
         self.polystring = compute_matrix(self.value)
-
-
-def compute_matrix(input):
-    ORDER = int(input)
-
-    NARY = np.zeros((ORDER+1,ORDER+1))
-    NARY[0,0] = 1
-
-    if ORDER > 0:
-        NARY[1,1] = 2
-
-        # fill out the coefficient matrix using equation 4-16
-        # fails if n < 1
-        for k in range(ORDER+1):
-            for n in range(ORDER):
-                NARY[n+1,k] = 2*NARY[n,k-1] - 2*n*NARY[n-1,k]
-
-    # print(NARY)
-    return hermite(NARY)
-
-
-# make the polynomial from the matrix
-def hermite(NARY):
-    rows = len(NARY[0])
-    cols = rows
-    temp = ""
-    
-    for i in range(rows):
-        temp += "H" + str(i) + " (x) = "
-        for j in range(cols - 1, -1, -1):
-            if(NARY[i][j]):     # value in the matrix not 0
-                if(j == 0):     # 1st column (when x^0)
-                    temp += str(NARY[i][j])
-                elif(j == 1):   # 2nd column (when x^1)
-                    temp += str(NARY[i][j]) + "x"
-                else:
-                    temp += str(NARY[i][j]) + "x^" + str(j) + " + "
-        temp += "\n"
-
-    return temp
