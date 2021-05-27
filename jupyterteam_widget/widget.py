@@ -65,8 +65,8 @@ class HermiteWidget(DOMWidget, ValueWidget):
     # Widget properties are defined as traitlets. Any property tagged with `sync=True`
     # is automatically synced to the frontend *any* time it changes in Python.
     # It is synced back to Python from the frontend *any* time the model is touched.
-    value = Int(4).tag(sync=True)
-    polystring = Unicode(compute_matrix(value.default())).tag(sync=True)
+    value = Int(-1).tag(sync=True)
+    polystring = Unicode('This is the polynomial string').tag(sync=True)
 
     # validator for input value
     @validate('value')

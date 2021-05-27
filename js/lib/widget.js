@@ -32,14 +32,15 @@ var HermiteWidgetModel = widgets.DOMWidgetModel.extend({
 
 // Custom View. Renders the widget model.
 var HermiteWidgetView = widgets.DOMWidgetView.extend({
+    // set the backend value from the frontend
     _onInputChanged: function() {
-        console.log("initial backend value = ", this.model.get('value'));
-        let tempval = this._valueInput.value;
-        console.log("value from input box = ", tempval);
-        this.model.set('value', tempval);
-        console.log("value from backend = ", this.model.get('value'));
+        this.model.set('value', parseInt(this._valueInput.value));
         this.model.save_changes();
-        this.el.textContent = this.model.get('polystring');
+    },
+
+    // get the polynomial string with the updated value
+    _onValueChanged: function() {
+        this.el.textContent += this.model.get('polystring');
     },
 
     // Defines how the widget gets rendered into the DOM
@@ -55,9 +56,12 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
         this._valueSubmit.value = "Get polynomial";
         this.el.appendChild(this._valueSubmit);
 
-        // display the polynomial when button clicked
+        // JavaScript -> Python update
+        this._valueInput.onchange = this._onInputChanged.bind(this);
+
+        // Python -> JavaScript update
         this._valueSubmit.onclick = () => {
-            this._onInputChanged();
+            this._onValueChanged();
         };
     }
 });
