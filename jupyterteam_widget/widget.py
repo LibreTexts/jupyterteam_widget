@@ -30,9 +30,7 @@ class HermiteWidget(DOMWidget, ValueWidget):
     # It is synced back to Python from the frontend *any* time the model is touched.
     value = Int(1).tag(sync=True)
 
-    coefficents = List([68]).tag(sync=True)
-
-    polystring = Unicode('this is the string').tag(sync=True)
+    polystring = Unicode('').tag(sync=True)
 
     # validator for input value
     @validate('value')
@@ -44,13 +42,9 @@ class HermiteWidget(DOMWidget, ValueWidget):
 
     @observe('value')
     def _value_changed(self, change):
-        self.polystring = testHermite(self.value)
-        # print(self.polystring)
+        self.polystring = hermite(self.value)
 
-def testFunc(input):
-    return int((input * 10 + 20)/5)
-
-def testHermite(input): 
+def hermite(input): 
     ORDER = int(input)
 
     NARY = np.zeros((ORDER+1,ORDER+1))
@@ -67,22 +61,38 @@ def testHermite(input):
 
     return hermite_string(NARY)
 
+# returns a string representing the nth hermite polynomial
 def hermite_string(NARY):
     rows = len(NARY[0])
+    rows -= 1
     cols = rows
-
     temp = ''
 
-    for i in range(rows):
-        temp += "H" + str(i) + " (x) = "
-        for j in range(cols - 1, -1, -1):
-            if(NARY[i][j]):     # value in the matrix not 0
-                if(j == 0):     # 1st column (when x^0)
-                    temp += str(NARY[i][j])
-                elif(j == 1):   # 2nd column (when x^1)
-                    temp += str(NARY[i][j]) + "x"
-                else:
-                    temp += str(NARY[i][j]) + "x^" + str(j) + " + "
+    temp += "H" + str(rows) + " (x) = "
+    for j in range(cols - 1, -1, -1):
+        if(NARY[rows][j]):     # value in the matrix not 0
+            if(j == 0):     # 1st column (when x^0)
+                temp += str(NARY[rows][j])
+            elif(j == 1):   # 2nd column (when x^1)
+                temp += str(NARY[rows][j]) + "x"
+            else:
+                temp += str(NARY[rows][j]) + "x^" + str(j) + " + "
 
-        temp+= "\n"
+    # this code prints out all of the polynomials
+    # rows = len(NARY[0])
+    # cols = rows
+    # temp = ""
+
+    # for i in range(rows):
+    #     temp += "H" + str(i) + " (x) = "
+    #     for j in range(cols - 1, -1, -1):
+    #         if(NARY[i][j]):     # value in the matrix not 0
+    #             if(j == 0):     # 1st column (when x^0)
+    #                 temp += str(NARY[i][j])
+    #             elif(j == 1):   # 2nd column (when x^1)
+    #                 temp += str(NARY[i][j]) + "x"
+    #             else:
+    #                 temp += str(NARY[i][j]) + "x^" + str(j) + " + "
+    #     temp += "\n"
+
     return temp 

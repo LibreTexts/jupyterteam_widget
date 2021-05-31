@@ -32,54 +32,42 @@ var HermiteWidgetModel = widgets.DOMWidgetModel.extend({
     })
 });
 
-
 // Custom View. Renders the widget model.
 var HermiteWidgetView = widgets.DOMWidgetView.extend({
-    getString: function() {
-        let tempval = this._valueInput.value;
-        console.log(tempval);
-        this.model.set('value', tempval);
-        this.model.save_changes();
-        return this.model.get('polystring');
-    },
     // Defines how the widget gets rendered into the DOM
     render: function() {
         this._valueSubmit = document.createElement('input');
-        this._valueSubmit.type = "button"
-
+        this._valueSubmit.type = "button";
+        this._valueSubmit.value = "submit";
         this.el.appendChild(this._valueSubmit);
 
-        this._valueSubmit.onclick = () => {
-            this.el.textContent += this.getString();
-        };
-
         this._valueInput = document.createElement('input');
-        this._valueInput.type = "number"
-
+        this._valueInput.type = "number";
         this.el.appendChild(this._valueInput);
 
-        this._valueInput.onchange = this._onInputChanged.bind(this);
+        this._output = document.createElement('p');
+        this._output.innerHTML = "";
+        this.el.appendChild(this._output);
 
-
-        // this.value_changed();
+        this._valueSubmit.onclick = () => {
+            let inputValue = parseInt(this._valueInput.value);
+            if(!inputValue || inputValue < 0 || inputValue > 10) {
+                this._output.innerHTML = "Invalid input! Please make sure you are inputting an integer between 0 and 10";
+            } else {
+            this.model.set('value', inputValue);
+            this.model.save_changes();
+            }
+        };
 
         // // Observe changes in the value traitlet in Python, and define
         // // a custom callback.
-        // this.model.on('change:value', this.value_changed, this);
+        this.model.on('change:polystring', this._value_changed, this);
     },
 
-    value_changed: function() {
-        this.el.textContent += this.model.get('polystring');
-    },
-
-    _onInputChanged: function() {
-        let tempval = this._valueInput.value;
-        console.log(tempval);
-        this.model.set('value', tempval);
-        this.model.save_changes();
+    _value_changed: function() {
+        this._output.innerHTML = this.model.get('polystring');
     },
 });
-
 
 module.exports = {
     HermiteWidgetModel: HermiteWidgetModel,
