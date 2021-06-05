@@ -41,10 +41,20 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
     // get the polynomial string with the updated value
     _onValueChanged: function() {
         this.el.textContent += this.model.get('polystring');
+
+        // display polynomial graph
+        // this.graphPolystring = document.createElement('div');
+        // this.graphPolystring.id = "placeholder";
+        // this.graphPolystring.style.width = "600px";
+        // this.graphPolystring.style.height = "300px";
+        // this.el.appendChild(this.graphPolystring);
+        // $.plot($("#placeholder"), this.model.get('datapoints'));
     },
 
     // Defines how the widget gets rendered into the DOM
     render: function() {
+        
+
         // input box
         this._valueInput = document.createElement('input');
         this._valueInput.type = "number";

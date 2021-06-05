@@ -3,26 +3,25 @@ from traitlets import Unicode, Int, validate, TraitError, observe
 from ._frontend import module_name, module_version
 import sys
 import numpy as np
+import math
 
 # See js/lib/widget.js for the frontend counterpart to this file.
 
 # make the polynomial from the matrix
 def hermite(NARY):
-    rows = len(NARY[0])
-    cols = rows
-    temp = ""
+    cols = len(NARY[0])
+    rows = cols - 1     # to get the last row
+    temp = ''
 
-    for i in range(rows):
-        temp += "H" + str(i) + " (x) = "
-        for j in range(cols - 1, -1, -1):
-            if(NARY[i][j]):     # value in the matrix not 0
-                if(j == 0):     # 1st column (when x^0)
-                    temp += str(NARY[i][j])
-                elif(j == 1):   # 2nd column (when x^1)
-                    temp += str(NARY[i][j]) + "x"
-                else:
-                    temp += str(NARY[i][j]) + "x^" + str(j) + " + "
-        temp += "\n"
+    temp += "H" + str(rows) + " (x) = "
+    for j in range(cols - 1, -1, -1):
+        if(NARY[rows][j]):     # value in the matrix not 0
+            if(j == 0):     # 1st column (when x^0)
+                temp += str(NARY[rows][j])
+            elif(j == 1):   # 2nd column (when x^1)
+                temp += str(NARY[rows][j]) + "x"
+            else:
+                temp += str(NARY[rows][j]) + "x^" + str(j) + " + "
 
     return temp
 
@@ -42,7 +41,23 @@ def compute_matrix(input):
             for n in range(ORDER):
                 NARY[n+1,k] = 2*NARY[n,k-1] - 2*n*NARY[n-1,k]
 
-    return hermite(NARY)
+    return NARY
+
+# compute the data points for the polynomial graph
+def compute_points(NARY):
+    cols = len(NARY[0])
+    last_row = cols - 1
+    datapoints = []
+
+    for x in range(100):    # taking 100 x-coordinates
+        y = 0
+
+        for j in range(cols):
+            y += (NARY[last_row][j] * math.pow(x, j))
+
+        datapoints.append([x, y])
+
+    return datapoints
 
 
 @register
@@ -89,4 +104,6 @@ class HermiteWidget(DOMWidget, ValueWidget):
 
     @observe('value')
     def _value_changed(self, change):
-        self.polystring = compute_matrix(self.value)
+        self.matrix = compute_matrix(self.value)
+        self.polystring = hermite(self.matrix)
+        self.datapoints = compute_points(self.matrix)
