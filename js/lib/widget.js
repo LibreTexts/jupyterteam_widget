@@ -1,5 +1,6 @@
 var widgets = require('@jupyter-widgets/base');
 var _ = require('lodash');
+var Plotly = require('plotly.js-dist-min');
 
 var version = '0.1.0';
 
@@ -43,15 +44,22 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
 
         this._valueInput = document.createElement('input');
         this._valueInput.type = "number";
+        this._valueInput.autocomplete = "off";
         this.el.appendChild(this._valueInput);
 
         this._output = document.createElement('p');
         this._output.innerHTML = "";
         this.el.appendChild(this._output);
 
+        this._plot = document.createElement('div');
+        this._plot.id = "placeholder";
+        // this._plot.style.width = "600px";
+        // this._plot.style.height = "300px";
+        this.el.appendChild(this._plot);
+
         this._valueSubmit.onclick = () => {
             let inputValue = parseInt(this._valueInput.value);
-            if(!inputValue || inputValue < 0 || inputValue > 10) {
+            if(!inputValue || inputValue <= 0 || inputValue > 10) {
                 this._output.innerHTML = "Invalid input! Please make sure you are inputting an integer between 0 and 10";
             } else {
             this.model.set('value', inputValue);
@@ -62,10 +70,25 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
         // // Observe changes in the value traitlet in Python, and define
         // // a custom callback.
         this.model.on('change:polystring', this._value_changed, this);
+
+        this.model.on('change:y_points', this._replot, this);
     },
 
     _value_changed: function() {
         this._output.innerHTML = this.model.get('polystring');
+    },
+
+    _replot: function() {
+        Plotly.newPlot("placeholder", {
+            "data": [{
+                "x": this.model.get('x_points'),
+                "y": this.model.get('y_points')
+            }],
+            "layout": {
+                "width": 600,
+                "height": 400
+            },
+        });
     },
 });
 

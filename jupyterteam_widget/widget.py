@@ -28,9 +28,13 @@ class HermiteWidget(DOMWidget, ValueWidget):
     # Widget properties are defined as traitlets. Any property tagged with `sync=True`
     # is automatically synced to the frontend *any* time it changes in Python.
     # It is synced back to Python from the frontend *any* time the model is touched.
-    value = Int(1).tag(sync=True)
+    value = Int(-1).tag(sync=True)
 
     polystring = Unicode('').tag(sync=True)
+
+    x_points = List().tag(sync=True)
+
+    y_points = List().tag(sync=True)
 
     # validator for input value
     @validate('value')
@@ -42,7 +46,11 @@ class HermiteWidget(DOMWidget, ValueWidget):
 
     @observe('value')
     def _value_changed(self, change):
-        self.polystring = hermite(self.value)
+        temp_NARY = hermite(self.value)
+        self.polystring = hermite_string(temp_NARY)
+        temp_points = compute_points(temp_NARY)
+        self.x_points = temp_points[0]
+        self.y_points = temp_points[1]
 
 def hermite(input): 
     ORDER = int(input)
@@ -59,13 +67,30 @@ def hermite(input):
             for n in range(ORDER):
                 NARY[n+1,k] = 2*NARY[n,k-1] - 2*n*NARY[n-1,k]
 
-    return hermite_string(NARY)
+    return NARY
+
+def compute_points(NARY):
+    cols = len(NARY[0])
+    last_row = cols - 1
+    x_points = []
+    y_points = []
+
+    for x in range(100):    # taking 100 x-coordinates
+        y = 0
+
+        for j in range(cols):
+            y += (NARY[last_row][j] * math.pow(x, j))
+
+        x_points.append(x)
+        y_points.append(y)
+
+    return (x_points, y_points)
 
 # returns a string representing the nth hermite polynomial
 def hermite_string(NARY):
     rows = len(NARY[0])
-    rows -= 1
     cols = rows
+    rows -= 1
     temp = ''
 
     temp += "H" + str(rows) + " (x) = "
