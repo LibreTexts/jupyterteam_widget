@@ -36,6 +36,10 @@ class HermiteWidget(DOMWidget, ValueWidget):
 
     y_points = List().tag(sync=True)
 
+    first_four = List().tag(sync=True)
+
+    psi_ndmn = List().tag(sync=True)
+
     # validator for input value
     @validate('value')
     def _valid_value(self, proposal):
@@ -48,10 +52,48 @@ class HermiteWidget(DOMWidget, ValueWidget):
     def _value_changed(self, change):
         temp_NARY = hermite(self.value)
         self.polystring = hermite_string(temp_NARY)
-        temp_points = compute_points(temp_NARY)
-        self.x_points = temp_points[0]
-        self.y_points = temp_points[1]
 
+        INTERVALS = 10**3
+
+        # construct x and y values for the first four pot
+        rhoAxis = np.linspace(0,2.5,INTERVALS)
+        tempthing = []
+
+        for i in range(5):
+            tempthing.append([])
+        for x in rhoAxis:
+            tempthing[0].append(x)
+            tempthing[1].append(singleHermite(1,x))
+            tempthing[2].append(singleHermite(2,x)/8)
+            tempthing[3].append(singleHermite(3,x)/27)
+            tempthing[4].append(singleHermite(4,x)/64)
+
+        self.first_four = tempthing
+
+        # values for the second plot
+        rhoPsi = np.linspace(-5,5,INTERVALS)
+        tempthing = []
+        tempthing.append([])
+        n = self.value
+        psi = []
+        for x in rhoPsi:
+            tempthing[0].append(x)
+            Hn = singleHermite(n,x)
+            psiCoefficient = math.e**(-x**2/2)/(2**n*math.factorial(n)*(math.pi)**(1/2))**(1/2)
+            psi.append(psiCoefficient*Hn)        
+        tempthing.append(psi)
+
+        # values for the third plot
+        psi = []
+        for x in rhoPsi:
+            Hn = singleHermite(n-1,x)
+            psiCoefficient = math.e**(-x**2/2)/(2**n*math.factorial(n)*(math.pi)**(1/2))**(1/2)
+            psi.append((psiCoefficient*Hn)**2)        
+        tempthing.append(psi)
+
+        self.psi_ndmn = tempthing
+        
+# returns NARY thing up to n = input
 def hermite(input): 
     ORDER = int(input)
 
@@ -68,23 +110,6 @@ def hermite(input):
                 NARY[n+1,k] = 2*NARY[n,k-1] - 2*n*NARY[n-1,k]
 
     return NARY
-
-def compute_points(NARY):
-    cols = len(NARY[0])
-    last_row = cols - 1
-    x_points = []
-    y_points = []
-
-    for x in range(100):    # taking 100 x-coordinates
-        y = 0
-
-        for j in range(cols):
-            y += (NARY[last_row][j] * math.pow(x, j))
-
-        x_points.append(x)
-        y_points.append(y)
-
-    return (x_points, y_points)
 
 # returns a string representing the nth hermite polynomial
 def hermite_string(NARY):
@@ -103,21 +128,15 @@ def hermite_string(NARY):
             else:
                 temp += str(NARY[rows][j]) + "x^" + str(j) + " + "
 
-    # this code prints out all of the polynomials
-    # rows = len(NARY[0])
-    # cols = rows
-    # temp = ""
-
-    # for i in range(rows):
-    #     temp += "H" + str(i) + " (x) = "
-    #     for j in range(cols - 1, -1, -1):
-    #         if(NARY[i][j]):     # value in the matrix not 0
-    #             if(j == 0):     # 1st column (when x^0)
-    #                 temp += str(NARY[i][j])
-    #             elif(j == 1):   # 2nd column (when x^1)
-    #                 temp += str(NARY[i][j]) + "x"
-    #             else:
-    #                 temp += str(NARY[i][j]) + "x^" + str(j) + " + "
-    #     temp += "\n"
-
     return temp 
+
+# for a given rho, find the hermite polynomial of order n
+def singleHermite(n,rho):
+    NARY = hermite(n)
+    coefficients = {}
+    Hn = 0
+    for k in range(n+1):
+        coefficients[k] = NARY[n,k]
+    for k in coefficients:
+        Hn += coefficients[k]*rho**k
+    return Hn
