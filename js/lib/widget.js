@@ -65,7 +65,7 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
 
         this._valueSubmit.onclick = () => {
             let inputValue = parseInt(this._valueInput.value);
-            if(!inputValue || inputValue <= 0 || inputValue > 10) {
+            if(isNaN(inputValue) || inputValue < 0 || inputValue > 10) {
                 this._output.innerHTML = "Invalid input! Please make sure you are inputting an integer between 0 and 10";
             } else {
             this.model.set('value', inputValue);

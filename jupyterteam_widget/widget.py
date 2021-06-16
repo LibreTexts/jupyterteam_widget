@@ -70,28 +70,29 @@ class HermiteWidget(DOMWidget, ValueWidget):
 
         self.first_four = tempthing
 
-        # values for the second plot
-        rhoPsi = np.linspace(-5,5,INTERVALS)
-        tempthing = []
-        tempthing.append([])
-        n = self.value
-        psi = []
-        for x in rhoPsi:
-            tempthing[0].append(x)
-            Hn = singleHermite(n,x)
-            psiCoefficient = math.e**(-x**2/2)/(2**n*math.factorial(n)*(math.pi)**(1/2))**(1/2)
-            psi.append(psiCoefficient*Hn)        
-        tempthing.append(psi)
+        if self.value > 0:
+            # values for the second plot
+            rhoPsi = np.linspace(-5,5,INTERVALS)
+            tempthing = []
+            tempthing.append([])
+            n = self.value
+            psi = []
+            for x in rhoPsi:
+                tempthing[0].append(x)
+                Hn = singleHermite(n,x)
+                psiCoefficient = math.e**(-x**2/2)/(2**n*math.factorial(n)*(math.pi)**(1/2))**(1/2)
+                psi.append(psiCoefficient*Hn)        
+            tempthing.append(psi)
 
-        # values for the third plot
-        psi = []
-        for x in rhoPsi:
-            Hn = singleHermite(n-1,x)
-            psiCoefficient = math.e**(-x**2/2)/(2**n*math.factorial(n)*(math.pi)**(1/2))**(1/2)
-            psi.append((psiCoefficient*Hn)**2)        
-        tempthing.append(psi)
+            # values for the third plot
+            psi = []
+            for x in rhoPsi:
+                Hn = singleHermite(n-1,x)
+                psiCoefficient = math.e**(-x**2/2)/(2**n*math.factorial(n)*(math.pi)**(1/2))**(1/2)
+                psi.append((psiCoefficient*Hn)**2)        
+            tempthing.append(psi)
 
-        self.psi_ndmn = tempthing
+            self.psi_ndmn = tempthing
         
 # returns NARY thing up to n = input
 def hermite(input): 
