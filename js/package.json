@@ -31,12 +31,13 @@
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.0.0",
-    "webpack": "^5",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.1",
+    "webpack": "^5"
   },
   "dependencies": {
     "@jupyter-widgets/base": "^1.1 || ^2 || ^3 || ^4",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "plotly.js-dist-min": "^1.58.4"
   },
   "jupyterlab": {
     "extension": "lib/labplugin",

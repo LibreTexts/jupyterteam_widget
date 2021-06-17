@@ -1,5 +1,6 @@
 var widgets = require('@jupyter-widgets/base');
 var _ = require('lodash');
+var Plotly = require('plotly.js-dist-min');
 
 var version = '0.1.0';
 
@@ -29,27 +30,102 @@ var HermiteWidgetModel = widgets.DOMWidgetModel.extend({
         _view_name : 'HermiteWidgetView',
         _view_module : 'jupyterteam_widget',
         _view_module_version : version,
-        value : 1
     })
 });
-
 
 // Custom View. Renders the widget model.
 var HermiteWidgetView = widgets.DOMWidgetView.extend({
     // Defines how the widget gets rendered into the DOM
     render: function() {
-        this.value_changed();
+        this._valueInput = document.createElement('input');
+        this._valueInput.type = "number";
+        this._valueInput.autocomplete = "off";
+        this.el.appendChild(this._valueInput);
 
-        // Observe changes in the value traitlet in Python, and define
-        // a custom callback.
-        this.model.on('change:value', this.value_changed, this);
+        this._output = document.createElement('p');
+        this._output.innerHTML = "";
+        this.el.appendChild(this._output);
+
+        this._PSI_NDMN = document.createElement('div');
+        this._PSI_NDMN.id = "PSI_NDMN";
+        this.el.appendChild(this._PSI_NDMN);
+
+        this._PSI_NDMN_2 = document.createElement('div');
+        this._PSI_NDMN_2.id = "PSI_NDMN_2";
+        this.el.appendChild(this._PSI_NDMN_2);
+
+        // JS change detection
+        this._valueInput.onchange = this._on_HTML_change.bind(this);
+
+        // // Observe changes in the value traitlet in Python, and define
+        // // a custom callback.
+        this.model.on('change:polystring', this._value_changed, this);
+
+        this.model.on('change:psi_ndmn', this._replot_PSI_NDMN, this);
     },
 
-    value_changed: function() {
-        this.el.textContent = this.model.get('value');
-    }
-});
+    _on_HTML_change: function() {
+      this._output.innerHTML = this.model.get('polystring');
+      let inputValue = parseInt(this._valueInput.value);
+      if(isNaN(inputValue) || inputValue < 0 || inputValue > 10) {
+          this._output.innerHTML = "Invalid input! Please make sure you are inputting an integer between 0 and 10";
+      } else {
+      this.model.set('value', inputValue);
+      this.model.save_changes();
+      }
+    },
 
+    _value_changed: function() {
+        this._output.innerHTML = this.model.get('polystring');
+    },
+
+    _replot_PSI_NDMN: function() {
+        let data_title = "n = " + this.model.get("value");
+        let squared_data_title = "n = " + (this.model.get("value") - 1) + " but squared actually";
+
+        let data = [{
+            "x": this.model.get('psi_ndmn')[0],
+            "y": this.model.get('psi_ndmn')[1],
+        }];
+
+        let layout = {
+            title: data_title,
+            xaxis: {
+              title: {
+                text: 'Rho',
+              },
+            },
+            yaxis: {
+              title: {
+                text: 'Psi_n(rho)',
+              }
+            }
+        }
+
+        Plotly.newPlot("PSI_NDMN", data, layout, {scrollZoom: false, displaylogo: false});
+
+        let data_2 = [{
+            "x": this.model.get('psi_ndmn')[0],
+            "y": this.model.get('psi_ndmn')[2],
+        }];
+
+        let layout_2 = {
+            title: squared_data_title,
+            xaxis: {
+              title: {
+                text: 'Rho',
+              },
+            },
+            yaxis: {
+              title: {
+                text: 'Psi_n(rho)^2',
+              }
+            }
+        }
+
+        Plotly.newPlot("PSI_NDMN_2", data_2, layout_2, {scrollZoom: false, displaylogo: false});
+    },
+});
 
 module.exports = {
     HermiteWidgetModel: HermiteWidgetModel,

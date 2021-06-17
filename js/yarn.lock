@@ -1753,6 +1753,11 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
+plotly.js-dist-min@^1.58.4:
+  version "1.58.4"
+  resolved "https://registry.yarnpkg.com/plotly.js-dist-min/-/plotly.js-dist-min-1.58.4.tgz#6a5b9baf1988b6aca6b20804503e4d70f3085186"
+  integrity sha512-9O3q1Wl5vL1diYwPE1AJQHtSBVqEGwUXCP+i6Xf6jA1iMFYUL4Rld5WCEcZXPtk/8owq6eqjQ78KEdxqRWHnfw==
+
 postcss-modules-extract-imports@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/postcss-modules-extract-imports/-/postcss-modules-extract-imports-3.0.0.tgz#cda1f047c0ae80c97dbe28c3e76a43b88025741d"

@@ -4,6 +4,7 @@ dist/
 build/
 *.py[cod]
 node_modules/
+*.log
 
 # Compiled javascript
 jupyterteam_widget/nbextension/
@@ -11,3 +12,5 @@ jupyterteam_widget/labextension/
 
 # OS X
 .DS_Store
+
+venv/
