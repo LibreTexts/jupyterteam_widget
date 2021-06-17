@@ -32,12 +32,6 @@ class HermiteWidget(DOMWidget, ValueWidget):
 
     polystring = Unicode('').tag(sync=True)
 
-    x_points = List().tag(sync=True)
-
-    y_points = List().tag(sync=True)
-
-    first_four = List().tag(sync=True)
-
     psi_ndmn = List().tag(sync=True)
 
     # validator for input value
@@ -54,21 +48,6 @@ class HermiteWidget(DOMWidget, ValueWidget):
         self.polystring = hermite_string(temp_NARY)
 
         INTERVALS = 10**3
-
-        # construct x and y values for the first four pot
-        rhoAxis = np.linspace(0,2.5,INTERVALS)
-        tempthing = []
-
-        for i in range(5):
-            tempthing.append([])
-        for x in rhoAxis:
-            tempthing[0].append(x)
-            tempthing[1].append(singleHermite(1,x))
-            tempthing[2].append(singleHermite(2,x)/8)
-            tempthing[3].append(singleHermite(3,x)/27)
-            tempthing[4].append(singleHermite(4,x)/64)
-
-        self.first_four = tempthing
 
         if self.value > 0:
             # values for the second plot
@@ -89,7 +68,7 @@ class HermiteWidget(DOMWidget, ValueWidget):
             for x in rhoPsi:
                 Hn = singleHermite(n-1,x)
                 psiCoefficient = math.e**(-x**2/2)/(2**n*math.factorial(n)*(math.pi)**(1/2))**(1/2)
-                psi.append((psiCoefficient*Hn)**2)        
+                psi.append((psiCoefficient*Hn)**2)
             tempthing.append(psi)
 
             self.psi_ndmn = tempthing
