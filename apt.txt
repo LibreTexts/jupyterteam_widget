@@ -3,4 +3,4 @@ nano
 vim
 htop
 tree
-yarn
+npm

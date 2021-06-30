@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+npm install -g yarn
+
 pip install -e .
 jupyter nbextension install --py --symlink --overwrite --sys-prefix jupyterteam_widget
 jupyter nbextension enable --py --sys-prefix jupyterteam_widget
