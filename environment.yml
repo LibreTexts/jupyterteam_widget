@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - https://conda.anaconda.org/conda-forge
+  - defaults
+dependencies:
+  - conda-tree
+  - ipywidgets
+  - matplotlib
+  - ipympl
+  - plotly
+  - jupyterlab
