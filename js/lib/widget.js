@@ -38,9 +38,14 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
     // Defines how the widget gets rendered into the DOM
     render: function() {
         this._valueInput = document.createElement('input');
-        this._valueInput.type = "number";
-        this._valueInput.autocomplete = "off";
+        this._valueInput.type = "range";
+        this._valueInput.min = "0";
+        this._valueInput.max = "10";
+        this._valueInput.value = "5";
         this.el.appendChild(this._valueInput);
+        
+        this.model.set('value', parseInt(this._valueInput.value));
+        this.model.save_changes();
 
         this._output = document.createElement('p');
         this._output.innerHTML = "";
@@ -55,17 +60,18 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
         this.el.appendChild(this._PSI_NDMN_2);
 
         // JS change detection
-        this._valueInput.onchange = this._on_HTML_change.bind(this);
+        this._valueInput.oninput = this._on_HTML_change.bind(this);
 
         // // Observe changes in the value traitlet in Python, and define
         // // a custom callback.
-        this.model.on('change:polystring', this._value_changed, this);
+        // this.model.on('change:polystring', this._value_changed, this);
 
         this.model.on('change:psi_ndmn', this._replot_PSI_NDMN, this);
     },
 
     _on_HTML_change: function() {
-      this._output.innerHTML = this.model.get('polystring');
+      // this._output.innerHTML = this.model.get('polystring');
+      this._output.innerHTML = "Value: " + this._valueInput.value;
       let inputValue = parseInt(this._valueInput.value);
       if(isNaN(inputValue) || inputValue < 0 || inputValue > 10) {
           this._output.innerHTML = "Invalid input! Please make sure you are inputting an integer between 0 and 10";
@@ -81,7 +87,9 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
 
     _replot_PSI_NDMN: function() {
         let data_title = "n = " + this.model.get("value");
-        let squared_data_title = "n = " + (this.model.get("value") - 1) + " but squared actually";
+        let tempval = (this.model.get("value") - 1);
+        if (tempval < 0) tempval++;
+        let squared_data_title = "n = " + tempval + " and squared";
 
         let data = [{
             "x": this.model.get('psi_ndmn')[0],
