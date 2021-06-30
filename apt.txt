@@ -1,0 +1,6 @@
+bash-completion
+nano
+vim
+htop
+tree
+yarn
