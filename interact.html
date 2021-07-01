@@ -12,7 +12,7 @@
     {
       binderOptions: {
         repo: "LibreTexts/jupyterteam_widget",
-        ref: "0.1.0",
+        ref: "0.2.0",
         binderUrl: "https://binder.libretexts.org"
       },
       kernelOptions: {
@@ -69,7 +69,10 @@ interact(f, x=10);
   </pre>
 
   <pre data-executable="true" data-language="python">
-
+def f(x):
+    w.value = x
+interact(f, x=5)
+w
   </pre>
 
 </body>
