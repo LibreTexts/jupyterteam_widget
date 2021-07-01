@@ -47,10 +47,12 @@ class HermiteWidget(DOMWidget, ValueWidget):
         temp_matrix = hermite_array(N)
         self.polystring = hermite_string(temp_matrix)
 
-        x_axis = np.linspace(-2.5,2.5,10**3)
+        values = np.linspace(-2.5,2.5,10**3)
+        x_axis = []
         y_axis = []
 
-        for x in x_axis:
+        for x in values:
+            x_axis.append(x)
             y_axis.append(hermite_polynomial(N,x))
 
         plot_axes = [x_axis,y_axis]
