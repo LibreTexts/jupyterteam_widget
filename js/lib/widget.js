@@ -60,14 +60,14 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
 
         // // Observe changes in the value traitlet in Python, and define
         // // a custom callback.
-        // this.model.on('change:polystring', this._value_changed, this);
+        this.model.on('change:polystring', this._value_changed, this);
 
         this.model.on('change:plot_data', this._replot_HERMITE_PLOT, this);
     },
 
     _on_HTML_change: function() {
       // this._output.innerHTML = this.model.get('polystring');
-      this._output.innerHTML = "Value: " + this._valueInput.value;
+      // this._output.innerHTML = "Value: " + this._valueInput.value;
       let inputValue = parseInt(this._valueInput.value);
       if(isNaN(inputValue) || inputValue < 0 || inputValue > 10) {
           this._output.innerHTML = "Invalid input! Please make sure you are inputting an integer between 0 and 10";
@@ -78,7 +78,13 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
     },
 
     _value_changed: function() {
-        this._output.innerHTML = this.model.get('polystring');
+        function convert(str) {
+            str = str.replace(/\*/g, "&#183;");
+            str = str.replace(/\^(.)\s/g, "<sup>$1</sup> ");
+            return str;
+        };
+
+        this._output.innerHTML = "Value: " + this._valueInput.value + "\n" + convert(this.model.get('polystring'));
     },
 
     _replot_HERMITE_PLOT: function() {
