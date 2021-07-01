@@ -47,7 +47,7 @@ class HermiteWidget(DOMWidget, ValueWidget):
         temp_matrix = hermite_array(N)
         self.polystring = hermite_string(temp_matrix)
 
-        x_axis = np.linspace(-5,5,10**3)
+        x_axis = np.linspace(-2.5,2.5,10**3)
         y_axis = []
 
         for x in x_axis:
