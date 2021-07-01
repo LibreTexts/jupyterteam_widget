@@ -104,7 +104,7 @@ def hermite_string(matrix):
     rows -= 1
     temp = ''
 
-    temp += "H" + str(rows) + " (x) = "
+    temp += "H" + str(rows) + "(x) = "
     for j in range(cols - 1, -1, -1):
         if matrix[rows][j]:     # value in the matrix not 0
             if j == 0:     # 1st column (when x^0)
