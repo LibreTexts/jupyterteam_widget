@@ -2,7 +2,6 @@ from ipywidgets import DOMWidget, ValueWidget, register
 from traitlets import Unicode, Int, validate, TraitError, List, observe
 
 import numpy as np
-import math
 
 from ._frontend import module_name, module_version
 
@@ -32,7 +31,7 @@ class HermiteWidget(DOMWidget, ValueWidget):
 
     polystring = Unicode('').tag(sync=True)
 
-    psi_ndmn = List().tag(sync=True)
+    plot_data = List().tag(sync=True)
 
     # validator for input value
     @validate('value')
@@ -44,81 +43,72 @@ class HermiteWidget(DOMWidget, ValueWidget):
 
     @observe('value')
     def _value_changed(self, change):
-        temp_NARY = hermite(self.value)
-        self.polystring = hermite_string(temp_NARY)
+        N = self.value
+        temp_matrix = hermite_array(N)
+        self.polystring = hermite_string(temp_matrix)
 
-        INTERVALS = 10**3
+        x_axis = np.linspace(-5,5,10**3)
+        y_axis = []
 
-       
-        # values for the second plot
-        rhoPsi = np.linspace(-5,5,INTERVALS)
-        tempthing = []
-        tempthing.append([])
-        n = self.value
-        psi = []
-        for x in rhoPsi:
-            tempthing[0].append(x)
-            Hn = singleHermite(n,x)
-            psiCoefficient = math.e**(-x**2/2)/(2**n*math.factorial(n)*(math.pi)**(1/2))**(1/2)
-            psi.append(psiCoefficient*Hn)        
-        tempthing.append(psi)
+        for x in x_axis:
+            y_axis.append(hermite_polynomial(N,x))
 
-        if self.value == 0:
-            n += 1
-        # values for the third plot
-        psi = []
-        for x in rhoPsi:
-            Hn = singleHermite(n-1,x)
-            psiCoefficient = math.e**(-x**2/2)/(2**n*math.factorial(n)*(math.pi)**(1/2))**(1/2)
-            psi.append((psiCoefficient*Hn)**2)
-        tempthing.append(psi)
+        plot_axes = [x_axis,y_axis]
+        self.plot_data = plot_axes
 
-        self.psi_ndmn = tempthing
-        
-# returns NARY thing up to n = input
-def hermite(input): 
-    ORDER = int(input)
+# returns a square array of hermite coefficients up to N
+def hermite_array(N):
 
-    NARY = np.zeros((ORDER+1,ORDER+1))
-    NARY[0,0] = 1
+    # dimension of array is 1 greater than the requested polynomial
+    # because polynomials start at order N = 0
+    matrix = np.zeros((N+1,N+1))
 
-    if ORDER > 0:
-        NARY[1,1] = 2
+    # initial entry, necessary when N = 0
+    matrix[0,0] = 1
 
-        # fill out the coefficient matrix using equation 4-16
-        # fails if n < 1
-        for k in range(ORDER+1):
-            for n in range(ORDER):
-                NARY[n+1,k] = 2*NARY[n,k-1] - 2*n*NARY[n-1,k]
+    if N > 0:
+        matrix[1,1] = 2
 
-    return NARY
+        # fill out the coefficient matrix according to a recursive pattern
+        for k in range(N+1):
+            for n in range(N):
+                matrix[n+1,k] = 2*matrix[n,k-1] - 2*n*matrix[n-1,k]
+
+    return matrix
+
+# for a given value x, find the hermite polynomial HN of order N
+def hermite_polynomial(N,x):
+    matrix = hermite_array(N)
+    coefficients = {}
+    HN = 0
+
+    # grab a row of values from matrix
+    for k in range(N+1):
+        coefficients[k] = matrix[N,k]
+
+    # multiply x by each value k in the row and raise it
+    # by its key k (position in the row).
+    # sum them to complete the polynomial
+    for k in coefficients:
+        HN += coefficients[k]*x**k
+
+    return HN
 
 # returns a string representing the nth hermite polynomial
-def hermite_string(NARY):
-    rows = len(NARY[0])
+def hermite_string(matrix):
+    rows = len(matrix[0])
     cols = rows
     rows -= 1
     temp = ''
 
     temp += "H" + str(rows) + " (x) = "
     for j in range(cols - 1, -1, -1):
-        if(NARY[rows][j]):     # value in the matrix not 0
-            if(j == 0):     # 1st column (when x^0)
-                temp += str(NARY[rows][j])
-            elif(j == 1):   # 2nd column (when x^1)
-                temp += str(NARY[rows][j]) + "x"
+        if matrix[rows][j]:     # value in the matrix not 0
+            if j == 0:     # 1st column (when x^0)
+                temp += str(matrix[rows][j])
+            elif j == 1:   # 2nd column (when x^1)
+                temp += str(matrix[rows][j]) + "x"
             else:
-                temp += str(NARY[rows][j]) + "x^" + str(j) + " + "
+                temp += str(matrix[rows][j]) + "x^" + str(j) + " + "
 
-    return temp 
-
-# for a given rho, find the hermite polynomial of order n
-def singleHermite(n,rho):
-    NARY = hermite(n)
-    coefficients = {}
-    Hn = 0
-    for k in range(n+1):
-        coefficients[k] = NARY[n,k]
-    for k in coefficients:
-        Hn += coefficients[k]*rho**k
-    return Hn
+    return temp
