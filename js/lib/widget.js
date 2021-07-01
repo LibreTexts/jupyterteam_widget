@@ -2,7 +2,7 @@ var widgets = require('@jupyter-widgets/base');
 var _ = require('lodash');
 var Plotly = require('plotly.js-dist-min');
 
-var version = '0.1.0';
+var version = '0.2.0';
 
 // See jupyterteam_widget/widget.py for the kernel counterpart to this file.
 
