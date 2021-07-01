@@ -57,7 +57,8 @@ class HermiteWidget(DOMWidget, ValueWidget):
         self.plot_data = plot_axes
 
 # returns a square array of hermite coefficients up to N
-def hermite_array(N):
+def hermite_array(n):
+    N = int(n)
 
     # dimension of array is 1 greater than the requested polynomial
     # because polynomials start at order N = 0
