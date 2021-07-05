@@ -41,7 +41,7 @@ var HermiteWidgetView = widgets.DOMWidgetView.extend({
         this._valueInput.type = "range";
         this._valueInput.min = "0";
         this._valueInput.max = "10";
-        this._valueInput.value = "5";
+        this._valueInput.value = this.model.get('value');
         this.el.appendChild(this._valueInput);
         
         this.model.set('value', parseInt(this._valueInput.value));
