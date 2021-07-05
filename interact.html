@@ -75,6 +75,48 @@ interact(f, x=5)
 w
   </pre>
 
+  <pre data-executable="true" data-language="python">
+def myInteract(func):
+    out = widgets.Output()
+    out.clear_output(wait=True)
+    
+    intSlide = widgets.IntSlider(min=0,max=10,value=5)
+    
+    with out:
+        display(intSlide)
+        display(func)
+        
+    return out
+  </pre>
+
+  <pre data-executable="true" data-language="python">
+myInteract(w)
+  </pre>
+
+  <pre data-executable="true" data-language="python">
+
+  </pre>
+
+  <pre data-executable="true" data-language="python">
+
+  </pre>
+
+  <pre data-executable="true" data-language="python">
+
+  </pre>
+
+  <pre data-executable="true" data-language="python">
+
+  </pre>
+
+  <pre data-executable="true" data-language="python">
+
+  </pre>
+
+  <pre data-executable="true" data-language="python">
+
+  </pre>
+
 </body>
 
 </html>
